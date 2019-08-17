@@ -1,0 +1,31 @@
+{
+  "Remo": [
+    {
+      "PutRequest": {
+        "Item": {
+          "Type": { "S": "hu" },
+          "DateTime": { "S": "1565882716" },
+          "Value": { "S": "60.1" }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "Type": { "S": "hu" },
+          "DateTime": { "S": "1565913775" },
+          "Value": { "S": "40.5" }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "Type": { "S": "mo" },
+          "DateTime": { "S": "1565740975" },
+          "Value": { "S": "1" }
+        }
+      }
+    }
+  ]
+}

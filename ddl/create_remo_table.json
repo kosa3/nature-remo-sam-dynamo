@@ -1,0 +1,27 @@
+{
+  "AttributeDefinitions": [
+    {
+      "AttributeName": "Type",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "DateTime",
+      "AttributeType": "S"
+    }
+  ],
+  "TableName": "Remo",
+  "KeySchema": [
+    {
+      "AttributeName": "Type",
+      "KeyType": "HASH"
+    },
+    {
+      "AttributeName": "DateTime",
+      "KeyType": "RANGE"
+    }
+  ],
+  "ProvisionedThroughput": {
+    "ReadCapacityUnits": 2,
+    "WriteCapacityUnits": 2
+  }
+}
