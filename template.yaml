@@ -23,7 +23,7 @@ Resources:
         GetNatureRemo:
           Type: Api
           Properties:
-            Path: /nature-remo
+            Path: /nature-remo/{Type}
             Method: GET
       Environment:
         Variables:

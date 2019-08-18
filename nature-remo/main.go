@@ -19,9 +19,9 @@ import (
 )
 
 type NatureRemo struct {
-	Type     string    `json:"type"`
-	DateTime string	   `json:"datetime"`
-	Value    string    `json:"value"`
+	Type     string `json:"type"`
+	DateTime string `json:"datetime"`
+	Value    string `json:"value"`
 }
 
 func getValueFromNewsEventType(sensorValue natureremo.SensorValue) interface{} {
@@ -46,7 +46,6 @@ func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	cli := natureremo.NewClient(os.Getenv("NATURE_REMO_ACCESS_TOKEN"))
 	ctx := context.Background()
 
-	// DynamoDB
 	sess := session.Must(session.NewSession())
 	config := aws.NewConfig().WithRegion("ap-northeast-1")
 	if len(endpoint) > 0 {
@@ -59,7 +58,8 @@ func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	switch request.HTTPMethod {
 	case "GET":
 		var results []NatureRemo
-		err := table.Get("Type", "hu").All(&results)
+		requestType := string(request.PathParameters["Type"])
+		err := table.Get("Type", requestType).All(&results)
 		if err != nil {
 			return events.APIGatewayProxyResponse{}, err
 		}
@@ -72,17 +72,23 @@ func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 		return events.APIGatewayProxyResponse{
 			Body:       string(bytes),
 			StatusCode: http.StatusOK,
+			Headers: map[string]string{
+				"Access-Control-Allow-Origin":  "*",
+				"Access-Control-Allow-Headers": "origin,Accept,Authorization,Content-Type",
+				"Content-Type":                 "application/json",
+			},
 		}, nil
 	case "POST":
-		// DynamoDBにデータを送信する
+		// デバイスデータを取得する
 		devices, err := cli.DeviceService.GetAll(ctx)
 		if err != nil {
 			log.Fatal(err)
 		}
 
 		var DateTime = strconv.FormatInt(time.Now().Unix(), 10)
+		// DynamoDBにデバイスデータを送信する
 		for _, device := range devices {
-			_, err	 := dynamodb.New(sess, config).TransactWriteItems(&dynamodb.TransactWriteItemsInput{
+			_, err := dynamodb.New(sess, config).TransactWriteItems(&dynamodb.TransactWriteItemsInput{
 				TransactItems: []*dynamodb.TransactWriteItem{
 					{
 						Put: &dynamodb.Put{
