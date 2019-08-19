@@ -11,7 +11,7 @@ Globals:
     Timeout: 5
 
 Resources:
-  RemoGetFunction:
+  RemoFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
       CodeUri: nature-remo/
@@ -25,21 +25,7 @@ Resources:
           Properties:
             Path: /nature-remo/{Type}
             Method: GET
-      Environment:
-        Variables:
-          DYNAMODB_ENDPOINT: ""
-          DYNAMODB_TABLE_NAME: !Ref RemoDynamoDBTable
-          NATURE_REMO_ACCESS_TOKEN: ""
-  RemoPutFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-    Properties:
-      CodeUri: nature-remo/
-      Handler: nature-remo
-      Runtime: go1.x
-      Tracing: Active # https://docs.aws.amazon.com/lambda/latest/dg/lambda-x-ray.html
-      Policies: AmazonDynamoDBFullAccess
-      Events:
-        GetNatureRemo:
+        PutNatureRemo:
           Type: Api
           Properties:
             Path: /nature-remo
@@ -53,28 +39,21 @@ Resources:
     Type: AWS::Serverless::SimpleTable # DyanmoDB resource
     Properties:
       PrimaryKey:
-        Name: Date
+        Name: Type
         Type: String
       ProvisionedThroughput:
         ReadCapacityUnits: 2
         WriteCapacityUnits: 2
-
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
   NatureRemoAPI:
     Description: "API Gateway endpoint URL for Prod environment for First Function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
-  RemoGetFunction:
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/nature-remo/"
+  RemoFunction:
     Description: "First Lambda Function ARN"
-    Value: !GetAtt RemoGetFunction.Arn
-  RemoGetFunctionIamRole:
+    Value: !GetAtt RemoFunction.Arn
+  RemoFunctionIamRole:
     Description: "Implicit IAM Role created for Remo function"
-    Value: !GetAtt RemoGetFunctionRole.Arn
-  RemoPutFunction:
-    Description: "First Lambda Function ARN"
-    Value: !PutAtt RemoPostFunction.Arn
-  RemoPutFunctionIamRole:
-    Description: "Implicit IAM Role created for Remo function"
-    Value: !PutAtt RemoPostFunctionRole.Arn
+    Value: !GetAtt RemoFunctionRole.Arn
